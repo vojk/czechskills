@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body, #__nuxt{
+    height: 100dvh;
+}
+
+* {
+    @apply text-white;
+    scroll-behavior: smooth;
+}
