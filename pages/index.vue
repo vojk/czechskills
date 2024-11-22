@@ -1,11 +1,33 @@
 <script setup lang="ts">
 import Header from '~/components/Header.vue'
 import WelcomeScreen from '~/components/webComponents/WelcomeScreen.vue'
+import axios from 'axios'
 
 interface text {
     header: string,
     content: string
 }
+
+interface IContact {
+    name: string,
+    title: string,
+    description: string,
+    image: string
+}
+
+interface ICountdown {
+    months: number,
+    days: number,
+    hours: number,
+    minutes: number,
+    seconds: number
+}
+
+const contacts = ref<IContact[]>([])
+const config = useRuntimeConfig()
+
+const timeDate = ref<ICountdown>({})
+const interval = ref<NodeJS.Timeout | null>(null)
 
 const texts: text[] = [
     {
@@ -21,10 +43,57 @@ const texts: text[] = [
         content: 'test'
     }
 ]
+
+function countDownToRelease(): ICountdown {
+    const date = new Date('12/05/2025');
+    const currentDate = new Date();
+    const timeDifference = date.getTime() - currentDate.getTime();
+    const months = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 30));
+    const days = Math.floor((timeDifference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+    return {
+        months,
+        days,
+        hours,
+        minutes,
+        seconds
+    };
+}
+
+onMounted(async () => {
+    timeDate.value = countDownToRelease()
+    interval.value = setInterval(() => {
+        timeDate.value = countDownToRelease()
+    }, 1000)
+
+    try {
+        const response = await axios.get(`${config.public.baseUrl}/api/contact`)
+        contacts.value = response.data
+    } catch (error) {
+        console.error('Error fetching contacts:', error)
+    }
+
+    try {
+        const response = await axios.get(`${config.public.baseUrl}/api/web-pages?slug=/`)
+    } catch (error) {
+        console.error(error);
+        
+    }    
+})
+
+onMounted(() => {
+    clearInterval(interval.value)
+})
+
+
 </script>
 
 <template>
     <Wrapper>
+        <Loading v-if="!contacts.length > 0" />
         <WelcomeScreen />
         <div class="w-full h-screen flex flex-col relative gap-2 bg-brand-midnightBlack" id="infopart">
             <div class="flex flex-col gap-16 items-center justify-center px-16 h-full">
@@ -49,7 +118,8 @@ const texts: text[] = [
             <div class="flex flex-col gap-16 items-center justify-center px-16 h-full">
                 <div>
                     <h1 class="text-5xl">Echoes of Eternity</h1>
-                    <h4>Release Date: Anticipated for Q3 2024</h4>
+                    <h4 class="text-2xl">Release Date: Anticipated for 12. 05. 2025</h4>
+                    <h4 class="text-xl">{{ `${timeDate.months} months, ${timeDate.days} days, ${timeDate.hours} hours, ${timeDate.minutes} minutes, ${timeDate.seconds} seconds` }}</h4>
                     <h4>Platforms: PC, PlayStation 5, Xbox Series X|S</h4>
                 </div>
                 <div
@@ -86,14 +156,8 @@ const texts: text[] = [
                     </p>
                 </div>
                 <div class="flex gap-6 items-center justify-center flex-wrap">
-                    <ContactCard name="Joe Doe" description="That One Guy" title="CEO"
-                        image="https://picsum.photos/id/10/200/200" />
-                    <ContactCard name="Joe Doe" description="That One Guy" title="CEO"
-                        image="https://picsum.photos/id/10/200/200" />
-                    <ContactCard name="Joe Doe" description="That One Guy" title="CEO"
-                        image="https://picsum.photos/id/10/200/200" />
-                    <ContactCard name="Joe Doe" description="That One Guy" title="CEO"
-                        image="https://picsum.photos/id/10/200/200" />
+                    <ContactCard v-for="(value, index) in contacts" :key="index" :name="value.name" :description="value.description" :title="value.title"
+                        :image="value.image" />
                 </div>
             </div>
         </div>
