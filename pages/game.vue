@@ -22,11 +22,12 @@
                     </div>
                 </div>
 
-                <h2 class="w-full text-3xl font-bold">Key Features</h2>
+                
 
                 <div
                     class="flex flex-col gap-4 py-6 w-full max-w-[50rem] min-w-[22rem] transition-transform duration-300 hover:scale-[1.01]">
                     <div class="h-full flex flex-col justify-center gap-4">
+                        <h2 class="w-full text-4xl font-bold">Key Features</h2>
                         <h2 class="text-3xl font-bold text-white">
                             Dynamic Time Mechanics
                         </h2>

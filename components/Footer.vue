@@ -1,3 +1,40 @@
+<script setup lang="ts">
+function formatDate(): string {
+    const days = [
+        "neděle",
+        "pondělí",
+        "úterý",
+        "středa",
+        "čtvrtek",
+        "pátek",
+        "sobota"
+    ];
+
+    const months = [
+        "ledna",
+        "února",
+        "března",
+        "dubna",
+        "května",
+        "června",
+        "července",
+        "srpna",
+        "září",
+        "října",
+        "listopadu",
+        "prosince"
+    ];
+
+    const now = new Date();
+    const dayOfWeek = days[now.getDay()];
+    const dayOfMonth = now.getDate();
+    const month = months[now.getMonth()];
+    const year = now.getFullYear();
+
+    return `Je ${dayOfWeek} ${dayOfMonth}. ${month} ${year}`;
+}
+</script>
+
 <template>
     <footer>
         <div class="w-full min-h-12 bg-neutral-950 flex items-center justify-between flex-col px-32 py-10 gap-4">
@@ -34,6 +71,7 @@
                 <div class="text-center">
                     <p>(c) {{ new Date().getFullYear() }} Nebula Forge Studios</p>
                     <p>All rights reserved</p>
+                    <p class="opacity-40">{{ formatDate() }}</p>
                 </div>
             </div>
         </div>
